@@ -9,17 +9,13 @@ from geopy import distance
 import pygeohash
 from src.utils import logger
 from src.utils.decorator import timing
-from src.utils.constants import *
+from src.utils.constants import KEY_LAT, KEY_LON
 
 LOGGER = logger.setup_logger(__name__)
 
 
 class Hash(object):
-    def __init__(self, key, connection, source_index, local_test=False): # TODO: Dont need index, connection, local_test
-        self.key = key
-        self.connection = connection
-        self.source_index = source_index
-        self.local_test = local_test
+    def __init__(self):
         self.tau = 2 * math.pi
         self.sigma = 0.3989422804014327
         self.hash_alphabet = "0123456789bcdefghjkmnpqrstuvwxyz"
@@ -36,9 +32,7 @@ class Hash(object):
         return hash_table_df
 
     def _geospatial_hash(self, df):
-        lat = self.key[0]
-        lon = self.key[1]
-        geo_fields = [lat, lon]
+        geo_fields = [KEY_LAT, KEY_LON]
         for c in geo_fields:
             if c not in df.columns:
                 LOGGER.debug("No Latitude/Longitude Information. Breaking.")
@@ -46,8 +40,8 @@ class Hash(object):
 
         geo_lookup = self._get_all_map()
         geo_df = df[geo_fields].fillna(
-            {lat: 38.9072, lon: 77.0369})  # Washington DC as default "safe" value for internal IPs
-        hash_map = geo_df.apply(lambda x: self._calc_hash_distances(x[lat], x[lon], geo_lookup), axis=1)
+            {KEY_LAT: 38.9072, KEY_LON: 77.0369})  # Washington DC as default "safe" value for internal IPs
+        hash_map = geo_df.apply(lambda x: self._calc_hash_distances(x[KEY_LAT], x[KEY_LON], geo_lookup), axis=1)
         return hash_map
 
     def _get_normal_value(self, val, sigma=None, mu=0):

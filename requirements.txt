@@ -1,6 +1,9 @@
-pandas
-numpy
-scikit-learn
+pandas~=1.2.4
+numpy~=1.20.3
+scikit-learn~=0.24.2
 scipy
 matplotlib
-geopy
+geopy~=2.2.0
+tqdm~=4.61.1
+pygeohash~=1.2.0
+setuptools~=49.2.1

@@ -4,7 +4,6 @@ setuptools.setup(
     name="GeoHashCluster",
     version="0.0.1",
     author="Lee Cote",
-    author_email="brian.lee.cote@gmail.com",
     description="lorem ipsum",
     classifiers=[
         "Programming Language :: Python :: 3",
