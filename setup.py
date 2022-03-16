@@ -2,9 +2,9 @@ import setuptools
 
 setuptools.setup(
     name="GeoHashCluster",
-    version="0.0.1",
+    version="1.0.0",
     author="Lee Cote",
-    description="lorem ipsum",
+    description="Location anomaly detection using a 3-dim normal distribution fits along with the geoHash algorithm.",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
