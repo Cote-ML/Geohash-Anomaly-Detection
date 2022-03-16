@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import math
 import sys
-import tqdm
 import json
 from functools import lru_cache
 from geopy import distance
@@ -33,11 +32,6 @@ class Hash(object):
 
     def _geospatial_hash(self, df):
         geo_fields = [KEY_LAT, KEY_LON]
-        for c in geo_fields:
-            if c not in df.columns:
-                LOGGER.debug("No Latitude/Longitude Information. Breaking.")
-                return df
-
         geo_lookup = self._get_all_map()
         geo_df = df[geo_fields].fillna(
             {KEY_LAT: 38.9072, KEY_LON: 77.0369})  # Washington DC as default "safe" value for internal IPs
@@ -85,31 +79,16 @@ class Hash(object):
         return output
 
     def _get_all_map(self):
-        try:
-            geo_hash = self._pull_db_hash()
-        except:
-            LOGGER.info("source_index has no geo_hash data saved, about to create and attempt to save geo data")
-            geo_hash = self._gen_hash_features()
-            self._save_geo_hash(geo_hash)
+        # Todo: Import geohash here if one exists for a data population. e.g., geo_hash = self._pull_db_hash()
+        geo_hash = self._gen_hash_features()
+        # Todo: Save this into a local DB for repeated function calls. e.g., self._save_geo_hash(geo_hash)
         return geo_hash
-
-    # TODO: Import json hash
-    def _pull_db_hash(self):
-        cursor = self.connection.cursor()
-        postgres_sql_select_query = "SELECT geo_mapping FROM geo_mappings WHERE hunt_index = \'{0}\'".format(
-            self.source_index)
-        cursor.execute(postgres_sql_select_query)
-        geo_json_rows = cursor.fetchall()
-        if len(geo_json_rows) > 0:
-            return geo_json_rows[0][0]
-        else:
-            raise Exception("Database Connection Established, but no data in table.")
 
     @timing
     def _gen_hash_features(self):
         self.geo_hash_to_lat_lon = self._generate_geo_hash()
         output = {}
-        for feature, latLon in tqdm(self.geo_hash_to_lat_lon.items()):
+        for feature, latLon in self.geo_hash_to_lat_lon.items():
             output[feature] = self._calc_hash_distances(lat=latLon[0], lon=latLon[1], feature_map={})
         return output
 
@@ -122,7 +101,8 @@ class Hash(object):
                 geo_hash_to_lat_long[code] = lat_long_position
         return geo_hash_to_lat_long
 
-    # TODO: Save json blob hash
+    # TODO: Test and deploy this on a local postgres
+    '''
     def _save_geo_hash(self, output):
         LOGGER.debug("Attempting to save Geo Hash into DB")
         try:
@@ -139,6 +119,18 @@ class Hash(object):
                         "Chances are another worker saved geo data for this hunt, before this worker was able to")
             LOGGER.error(error)
             return None
+    '''
 
-
-
+    # TODO: Import from postgres DB an existing hash map
+    '''
+    def _pull_db_hash(self):
+        cursor = self.connection.cursor()
+        postgres_sql_select_query = "SELECT geo_mapping FROM geo_mappings WHERE hunt_index = \'{0}\'".format(
+            self.source_index)
+        cursor.execute(postgres_sql_select_query)
+        geo_json_rows = cursor.fetchall()
+        if len(geo_json_rows) > 0:
+            return geo_json_rows[0][0]
+        else:
+            raise Exception("Database Connection Established, but no data in table.")
+    '''
