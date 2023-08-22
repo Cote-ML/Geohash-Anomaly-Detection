@@ -79,9 +79,11 @@ class Hash(object):
         return output
 
     def _get_all_map(self):
-        # Todo: Import geohash here if one exists for a data population. e.g., geo_hash = self._pull_db_hash()
+        # Todo: Import geohash here if one exists for a data population. e.g., 
+        # geo_hash = self._pull_db_hash()
         geo_hash = self._gen_hash_features()
-        # Todo: Save this into a local DB for repeated function calls. e.g., self._save_geo_hash(geo_hash)
+        # Todo: Save this into a local DB for repeated function calls. e.g., 
+        # self._save_geo_hash(geo_hash)
         return geo_hash
 
     @timing
@@ -101,13 +103,11 @@ class Hash(object):
                 geo_hash_to_lat_long[code] = lat_long_position
         return geo_hash_to_lat_long
 
-    # TODO: Test and deploy this on a local postgres
-    '''
     def _save_geo_hash(self, output):
         LOGGER.debug("Attempting to save Geo Hash into DB")
         try:
             cursor = self.connection.cursor()
-            postgres_sql_save_query = "INSERT INTO geo_mappings(hunt_index, geo_mapping) VALUES(\'{0}\', \'{1}\' )". \
+            postgres_sql_save_query = "INSERT INTO geo_mappings(index, geo_mapping) VALUES(\'{0}\', \'{1}\' )". \
                 format(self.source_index, json.dumps(output))
             cursor.execute(postgres_sql_save_query)
             self.connection.commit()
@@ -116,13 +116,10 @@ class Hash(object):
 
         except Exception as error:
             LOGGER.info("failed to save geoMapping data to psql. "
-                        "Chances are another worker saved geo data for this hunt, before this worker was able to")
+                        "Chances are another worker saved geo data before this worker was able to")
             LOGGER.error(error)
             return None
-    '''
-
-    # TODO: Import from postgres DB an existing hash map
-    '''
+            
     def _pull_db_hash(self):
         cursor = self.connection.cursor()
         postgres_sql_select_query = "SELECT geo_mapping FROM geo_mappings WHERE hunt_index = \'{0}\'".format(
@@ -133,4 +130,4 @@ class Hash(object):
             return geo_json_rows[0][0]
         else:
             raise Exception("Database Connection Established, but no data in table.")
-    '''
+
