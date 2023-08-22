@@ -122,7 +122,7 @@ class Hash(object):
             
     def _pull_db_hash(self):
         cursor = self.connection.cursor()
-        postgres_sql_select_query = "SELECT geo_mapping FROM geo_mappings WHERE hunt_index = \'{0}\'".format(
+        postgres_sql_select_query = "SELECT geo_mapping FROM geo_mappings WHERE index = \'{0}\'".format(
             self.source_index)
         cursor.execute(postgres_sql_select_query)
         geo_json_rows = cursor.fetchall()
