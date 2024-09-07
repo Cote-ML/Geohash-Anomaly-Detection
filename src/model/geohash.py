@@ -115,8 +115,7 @@ class Hash(object):
             return None
 
         except Exception as error:
-            LOGGER.info("failed to save geoMapping data to psql. "
-                        "Chances are another worker saved geo data before this worker was able to")
+            LOGGER.info("failed to save geoMapping data to psql. ")
             LOGGER.error(error)
             return None
             
